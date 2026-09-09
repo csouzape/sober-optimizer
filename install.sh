@@ -48,7 +48,7 @@ ask_yn() {
     local answer
     local prompt
     while true; do
-        prompt="${YELLOW}${question} ${WHITE}[y/n]${NC}  > "
+        printf -v prompt '%b' "${YELLOW}${question} ${WHITE}[y/n]${NC}  > "
         read -r -p "$prompt" answer
         case "$answer" in
             y|Y) return 0 ;;
@@ -83,19 +83,71 @@ backup_config() {
     return 1
 }
 
+select_profile() {
+    echo -e "${CYAN}Choose a configuration profile:${NC}"
+    echo -e "${WHITE}  1) Recommended     Balanced settings for most users${NC}"
+    echo -e "${WHITE}  2) Maximum FPS     Prioritizes performance over quality${NC}"
+    echo -e "${WHITE}  3) Quality         Keeps visual quality as the priority${NC}"
+    echo -e "${WHITE}  4) Custom           Choose each setting yourself${NC}"
+
+    while true; do
+        read -r -p "  Select a profile [1-4]: " profile_choice
+        case "$profile_choice" in
+            1) PROFILE="recommended"; PROFILE_NAME="Recommended"; return 0 ;;
+            2) PROFILE="fps"; PROFILE_NAME="Maximum FPS"; return 0 ;;
+            3) PROFILE="quality"; PROFILE_NAME="Quality"; return 0 ;;
+            4) PROFILE="custom"; PROFILE_NAME="Custom"; return 0 ;;
+            *) echo -e "${RED}  Invalid option. Choose 1, 2, 3 or 4.${NC}" ;;
+        esac
+    done
+}
+
+apply_profile() {
+    case "$PROFILE" in
+        recommended)
+            GRAPHICS_MODE="performance"
+            FRM_ENABLED=true
+            FRM_VALUE=3
+            DISCORD_RPC=true
+            DISCORD_JOIN=true
+            GAMEMODE=true
+            GAMEPAD=false
+            ;;
+        fps)
+            GRAPHICS_MODE="performance"
+            FRM_ENABLED=true
+            FRM_VALUE=1
+            DISCORD_RPC=false
+            DISCORD_JOIN=false
+            GAMEMODE=true
+            GAMEPAD=false
+            ;;
+        quality)
+            GRAPHICS_MODE="balanced"
+            FRM_ENABLED=false
+            FRM_VALUE=10
+            DISCORD_RPC=true
+            DISCORD_JOIN=true
+            GAMEMODE=true
+            GAMEPAD=false
+            ;;
+    esac
+
+    CHANGED=false
+    [ "$GRAPHICS_MODE" != "$CUR_GRAPHICS" ] && CHANGED=true
+    [ "$FRM_ENABLED" = true ] && [ "$FRM_VALUE" != "$CUR_FRM" ] && CHANGED=true
+    [ "$FRM_ENABLED" = false ] && [ -n "$CUR_FRM" ] && CHANGED=true
+    [ "$DISCORD_RPC" != "$CUR_DISCORD_RPC" ] && CHANGED=true
+    [ "$DISCORD_JOIN" != "$CUR_DISCORD_JOIN" ] && CHANGED=true
+    [ "$GAMEMODE" != "$CUR_GAMEMODE" ] && CHANGED=true
+    [ "$GAMEPAD" != "$CUR_GAMEPAD" ] && CHANGED=true
+}
+
 configure_sober() {
     clear
     print_banner
 
     read_current_config
-
-    BACKUP_CONFIG=false
-    if [ -f "$CONFIG_DEST" ]; then
-        if ask_yn "Create a backup of config.json in $HOME before saving?"; then
-            BACKUP_CONFIG=true
-        fi
-        echo ""
-    fi
 
     CUR_GRAPHICS="${_cfg_graphics:-$DEFAULT_GRAPHICS_MODE}"
     CUR_FRM="${_cfg_frm:-}"
@@ -113,7 +165,24 @@ configure_sober() {
     GAMEMODE="$CUR_GAMEMODE"
     GAMEPAD="$CUR_GAMEPAD"
 
-    CHANGED=false
+    select_profile
+    echo -e "${GREEN}Selected profile: $PROFILE_NAME${NC}\n"
+
+    BACKUP_CONFIG=false
+    if [ -f "$CONFIG_DEST" ]; then
+        if ask_yn "Create a backup of config.json in $HOME before saving?"; then
+            BACKUP_CONFIG=true
+        fi
+        echo ""
+    fi
+
+    if [ "$PROFILE" != "custom" ]; then
+        apply_profile
+    else
+        CHANGED=false
+    fi
+
+    if [ "$PROFILE" = "custom" ]; then
 
     echo -e "${BLUE}╔═════════════════════════════════════════╗${NC}"
     echo -e "${BLUE}║${WHITE}           Sober Configuration           ${BLUE}║${NC}"
@@ -207,6 +276,8 @@ configure_sober() {
     [ "$NEW_GAMEPAD" != "$CUR_GAMEPAD" ] && CHANGED=true
     GAMEPAD="$NEW_GAMEPAD"
     echo ""
+
+    fi
 
    
     if ! $CHANGED; then

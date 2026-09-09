@@ -5,7 +5,7 @@ A terminal-based interactive configuration tool for [Sober](https://vinegarhq.or
 
 ## What it does
 
-Guides you through the most impactful Sober settings with clear explanations for each option, then writes the config file directly to the correct location — keeping Sober's original header comments intact.
+ Guides you through ready-made Sober profiles or lets you choose each setting individually, then writes the config file directly to the correct location — keeping Sober's original header comments intact.
 
 ## Requirements
 
@@ -29,6 +29,15 @@ chmod +x install.sh
 | `discord_rpc_show_join_button` | `false` | `true` | Lets friends join your game from Discord |
 | `enable_gamemode` | `true` | `true` | Prioritizes system resources for the game (Linux GameMode) |
 | `allow_gamepad_permission` | `false` | `false` | Enables controller/gamepad support |
+
+## Profiles
+
+| Profile | Behavior |
+|---------|----------|
+| Recommended | Performance mode, FRM level 3, Discord RPC, GameMode, and no gamepad permission |
+| Maximum FPS | Performance mode, FRM level 1, GameMode, and disables Discord RPC and gamepad permission |
+| Quality | Balanced graphics, no FRM override, Discord RPC, GameMode, and no gamepad permission |
+| Custom | Choose every setting individually |
 
 ## Behavior
 
