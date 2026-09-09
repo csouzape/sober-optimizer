@@ -70,11 +70,32 @@ read_current_config() {
     _cfg_gamepad=$(grep -o '"allow_gamepad_permission": *[a-z]*' "$CONFIG_DEST" | grep -o '[a-z]*$')
 }
 
+backup_config() {
+    local backup_dest="$HOME/sober-config.json.backup-$(date +%Y%m%d-%H%M%S)"
+
+    if cp -- "$CONFIG_DEST" "$backup_dest"; then
+        echo -e "${GREEN}✔ Backup created at:${NC}"
+        echo -e "${WHITE}  $backup_dest${NC}"
+        return 0
+    fi
+
+    echo -e "${RED}Could not create the backup. Configuration was not saved.${NC}"
+    return 1
+}
+
 configure_sober() {
     clear
     print_banner
 
     read_current_config
+
+    BACKUP_CONFIG=false
+    if [ -f "$CONFIG_DEST" ]; then
+        if ask_yn "Create a backup of config.json in $HOME before saving?"; then
+            BACKUP_CONFIG=true
+        fi
+        echo ""
+    fi
 
     CUR_GRAPHICS="${_cfg_graphics:-$DEFAULT_GRAPHICS_MODE}"
     CUR_FRM="${_cfg_frm:-}"
@@ -217,6 +238,10 @@ configure_sober() {
     echo -e "${BLUE}╚═════════════════════════════════════════╝${NC}\n"
 
     ask_yn "Save configuration?" || return
+
+    if $BACKUP_CONFIG && ! backup_config; then
+        return
+    fi
 
     
     if [ ! -d "$(dirname "$CONFIG_DEST")" ]; then

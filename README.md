@@ -34,6 +34,7 @@ chmod +x install.sh
 
 - Reads your **current config** before asking anything — already optimized values are detected and reported as unchanged
 - Shows the **current value** and the **recommended value** for each option
+- Offers an optional timestamped backup in your home folder before saving
 - If **nothing changed**, the config is not rewritten
 - Displays a **summary** with highlighted changes before saving
 - Preserves Sober's original `// !!! STOP !!!` header comments in the output file
@@ -43,6 +44,9 @@ chmod +x install.sh
 ```
 ~/.var/app/org.vinegarhq.Sober/config/sober/config.json
 ```
+
+Backups are saved in `$HOME` with a timestamped name such as
+`sober-config.json.backup-20260909-153000`.
 
 ## Notes
 
