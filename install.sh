@@ -107,7 +107,7 @@ apply_profile() {
         recommended)
             GRAPHICS_MODE="performance"
             FRM_ENABLED=true
-            FRM_VALUE=3
+            FRM_VALUE=3|
             DISCORD_RPC=true
             DISCORD_JOIN=true
             GAMEMODE=true
