@@ -46,9 +46,10 @@ print_banner() {
 ask_yn() {
     local question="$1"
     local answer
+    local prompt
     while true; do
-        echo -e "${YELLOW}$question ${WHITE}[y/n]${NC}"
-        read -p "  > " answer
+        prompt="${YELLOW}${question} ${WHITE}[y/n]${NC}  > "
+        read -r -p "$prompt" answer
         case "$answer" in
             y|Y) return 0 ;;
             n|N) return 1 ;;
