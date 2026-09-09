@@ -1,4 +1,5 @@
 # Sober Optimizer
+
 <img width="1245" height="519" alt="image" src="https://github.com/user-attachments/assets/422ba9f1-41da-4de1-b649-c0705181f21d" />
 
 A terminal-based interactive configuration tool for [Sober](https://vinegarhq.org/Sober/), the Roblox client for Linux.
