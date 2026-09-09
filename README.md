@@ -61,3 +61,6 @@ Backups are saved in `$HOME` with a timestamped name such as
 
 - Deleting the config file and launching Sober will restore it to defaults
 - Official documentation: https://vinegarhq.org/Sober/Configuration/index.html
+
+## License
+This project is licensed under the GNU General Public License v2.0. See the LICENSE file for details.
